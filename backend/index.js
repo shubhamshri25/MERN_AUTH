@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import path from "path";
+import { connectDb } from "./db/connectDb.js";
 
 const app = express();
 
@@ -14,5 +15,6 @@ app.get("/", (req, res) => {
 });
 
 app.listen(port, () => {
+  connectDb();
   console.log(`Server is running on port ${port}`);
 });
