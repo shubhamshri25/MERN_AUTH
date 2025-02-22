@@ -11,10 +11,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(express.json());
-
-app.get("/", (req, res) => {
-  res.send("Hello from backend");
-});
+app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 

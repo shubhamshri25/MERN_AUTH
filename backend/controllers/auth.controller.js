@@ -1,6 +1,10 @@
-import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
+
+import { User } from "../models/user.model.js";
+
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
+
 import {
   sendVerificationEmail,
   sendWelcomeEmail,
@@ -154,7 +158,7 @@ export const forgotPassword = async (req, res) => {
     // send email
     await sendPasswordResetEmail(
       user.email,
-      `${process.env.CLIENT_URL}/reset-password/${resetToken}`
+      `${process.env.CLIENT_URL}/reset-password/${resetToken}` // this is the frontend reset password link
     );
 
     res.status(200).json({
@@ -174,7 +178,7 @@ export const resetPassword = async (req, res) => {
 
     const user = await User.findOne({
       resetPasswordToken: token,
-      resetPasswordExpiresAt: { $gt: Date.now() },
+      resetPasswordExpiresAt: { $gt: Date.now() }, // checking if the token is not expired
     });
 
     if (!user) {
@@ -184,7 +188,7 @@ export const resetPassword = async (req, res) => {
     }
 
     // update password
-    const hashedPassword = await bcryptjs.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     user.password = hashedPassword;
     user.resetPasswordToken = undefined;
@@ -198,6 +202,22 @@ export const resetPassword = async (req, res) => {
       .json({ success: true, message: "Password reset successful" });
   } catch (error) {
     console.log("Error in resetPassword ", error);
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+export const checkAuth = async (req, res) => {
+  try {
+    const user = await User.findById(req.userId).select("-password");
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User not found" });
+    }
+
+    res.status(200).json({ success: true, user });
+  } catch (error) {
+    console.log("Error in checkAuth ", error);
     res.status(400).json({ success: false, message: error.message });
   }
 };
