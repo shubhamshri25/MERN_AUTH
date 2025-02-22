@@ -2,7 +2,7 @@ import express from "express";
 import {
   signUp,
   login,
-  logOut,
+  logout,
   verifyEmail,
   forgotPassword,
   resetPassword,
@@ -12,7 +12,7 @@ const router = express.Router();
 
 router.post("/signup", signUp);
 router.post("/login", login);
-router.post("/logout", logOut);
+router.post("/logout", logout);
 
 router.post("/verify-email", verifyEmail);
 router.post("/forgot-password", forgotPassword);
